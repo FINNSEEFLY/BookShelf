@@ -49,7 +49,11 @@ namespace BookShelf
                 isbn = FixIsbn(isbn);
                 if (IsIsbnCorrect(isbn))
                 {
-
+                    if(Books.Exists((x)=>x.Isbn==isbn))
+                    {
+                        MessageBox.Show("Книга с таким ISBN уже добавлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
                 }
                 else
                 {
@@ -108,10 +112,10 @@ namespace BookShelf
                     int checkSum = 0;
                     for (int i = 0; i < 9; i++)
                     {
-                        checkSum += Convert.ToInt32(isbn[i]) * (i + 1);
+                        checkSum += int.Parse(isbn[i].ToString()) * (i + 1);
                     }
                     checkSum %= 11;
-                    if (checkSum == isbn[9] || (checkSum == 10 && isbn[9] == 'X'))
+                    if (checkSum == int.Parse(isbn[9].ToString()) || (checkSum == 10 && isbn[9] == 'X'))
                         return true;
                     else
                         return false;
@@ -153,5 +157,6 @@ namespace BookShelf
         {
             return isbn.Replace("-", "").Replace(" ", "");
         }
+        
     }
 }

@@ -98,8 +98,12 @@
                 <ScrollViewer>
                     <DataGrid x:Name="GridBooks" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ISBN" Binding="{Binding Path=Books.Isbn}"></DataGridTextColumn>
-                            <DataGridTextColumn Header="Название" Binding="{Binding Path=Books.Title}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="ISBN" Binding="{Binding Path=Isbn}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Path=Title}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Автор" Binding="{Binding Path=Author}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Год выхода" Binding="{Binding Path=Year}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Издатель" Binding="{Binding Path=Publisher}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Цена" Binding="{Binding Path=Price}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </ScrollViewer>

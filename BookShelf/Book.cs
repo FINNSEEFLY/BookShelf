@@ -18,7 +18,7 @@ namespace BookShelf
 
         public override string ToString()
         {
-            return "\"" + Title + "\" (" + Year + ") " + Author; 
+            return "\"" + Title + "\" (" + Year + ") " + Author + "ISBN : " + Isbn;
         }
 
     }

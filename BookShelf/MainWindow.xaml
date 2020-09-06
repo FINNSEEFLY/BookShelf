@@ -1,0 +1,109 @@
+﻿<Window x:Class="BookShelf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BookShelf"
+        xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Книжная полка" Height="600" Width="1000"
+        x:Name="MainWindowFrame"
+        >
+    <Window.Resources>
+        <Style x:Key="LeftSideButtons" TargetType="Button">
+            <Setter Property="FontFamily" Value="Open Sans" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Open Sans"/>
+            <Setter Property="FontSize" Value="18"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Open Sans"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="Height" Value="18"/>
+        </Style>
+    </Window.Resources>
+    <Grid x:Name="GrdContainer">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="17"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Menu VerticalAlignment="Top" Grid.Row="0">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Загрузить библиотеку"></MenuItem>
+                <MenuItem Header="Сохранить библиотеку"></MenuItem>
+                <MenuItem x:Name="MiExit" Click="ExitClick" Header="Выход"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <Grid x:Name="GrdContent" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <Grid x:Name="GrdLeftSide" Grid.Column="0" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0">
+                    <TextBlock  Text="ISBN" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 15 0 0 " ></TextBlock>
+                    <TextBox x:Name="TbIsbn" DockPanel.Dock="Bottom" Margin="13" PreviewTextInput="CheckingForNumberInISBN"></TextBox>
+                </DockPanel>
+                <DockPanel Grid.Row="1">
+                    <TextBlock  Text="Автор" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 15 0 0 "></TextBlock>
+                    <TextBox x:Name="TbAuthor" DockPanel.Dock="Bottom" Margin="13"></TextBox>
+                </DockPanel>
+                <DockPanel Grid.Row="2">
+                    <TextBlock  Text="Издательство" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 15 0 0 "></TextBlock>
+                    <TextBox x:Name="TbPublisher" DockPanel.Dock="Bottom" Margin="13"></TextBox>
+                </DockPanel>
+                <DockPanel Grid.Row="3">
+                    <TextBlock  Text="Год" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 15 0 0 "></TextBlock>
+                    <TextBox x:Name="TbYear" DockPanel.Dock="Bottom" Margin="13" PreviewTextInput="CheckingForNumber"></TextBox>
+                </DockPanel>
+                <DockPanel Grid.Row="4">
+                    <TextBlock  Text="Цена" HorizontalAlignment="Center" DockPanel.Dock="Top" Margin="0 15 0 0 "></TextBlock>
+                    <TextBox x:Name="TbPrice" DockPanel.Dock="Bottom" Margin="13" PreviewTextInput="CheckingForNumber"></TextBox>
+                </DockPanel>
+                <Button x:Name="BtnAdd" Click="AddBookClick" Grid.Row="5" Style="{StaticResource ResourceKey=LeftSideButtons}">
+                    <TextBlock Text="Добавить"/>
+                </Button>
+                <Button x:Name="BtnDel" Grid.Row="6" Style="{StaticResource ResourceKey=LeftSideButtons}">
+                    <TextBlock Text="Удалить"/>
+                </Button>
+                <Button x:Name="BtnExit" Click="ExitClick" Grid.Row="7" Style="{StaticResource ResourceKey=LeftSideButtons}">
+                    <TextBlock Text="Выход" />
+                </Button>
+            </Grid>
+            <Grid x:Name="GrddRightSide" Grid.Column="1">
+                <ScrollViewer>
+                    <DataGrid x:Name="GridBooks" AutoGenerateColumns="False" ColumnWidth="*" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ISBN" Binding="{Binding Path=Books.Isbn}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Path=Books.Title}"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

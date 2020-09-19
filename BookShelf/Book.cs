@@ -4,6 +4,7 @@ using System.Text;
 
 namespace BookShelf
 {
+    [Serializable]
     class Book
     {
 
@@ -19,6 +20,16 @@ namespace BookShelf
         public override string ToString()
         {
             return "\"" + Title + "\" (" + Year + ") " + Author + "ISBN : " + Isbn;
+        }
+
+        public override int GetHashCode()
+        {
+            return string.GetHashCode(Isbn+Title+Author+Publisher+Year.ToString()+Price.ToString());
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
 
     }

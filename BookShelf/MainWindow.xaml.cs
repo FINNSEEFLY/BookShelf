@@ -26,7 +26,7 @@ namespace BookShelf
     /// </summary>
     public partial class MainWindow : Window
     {
-        ObservableCollection<Book> Books = new ObservableCollection<Book>
+        private ObservableCollection<Book> Books = new ObservableCollection<Book>
         {
             new Book { Isbn = "9785170166824", Author = "Чак Паланик", Title = "Бойцовский клуб", Year = 1996, Publisher = "ACT", Price = 18 },
             new Book { Isbn = "0201835959", Author = "Фредерик Брукс", Title = "Мифический человеко-месяц", Year = 1975, Publisher = "Addison–Wesley", Price = 71 },
@@ -34,9 +34,10 @@ namespace BookShelf
             new Book { Isbn = "9785170800858", Author = "Хаксли Олдос", Title = "О дивный новый мир", Year = 2014, Publisher = "ACT", Price = 9 }
             //new Book { Isbn = "9785446109609", Author = "Роберт Мартин", Title = "Чистый код. Создание, анализ и рефакторинг", Year = 2019, Publisher="Питер", Price = 84}
         };
-        const string RegExp = @"\b[0-9]{9,}[X]?\b";
-        SaveFileDialog saveFileDialog = new SaveFileDialog();
-        OpenFileDialog openFileDialog = new OpenFileDialog();
+
+        private const string  RegExp = @"\b[0-9]{9,}[X]?\b";
+        private readonly SaveFileDialog saveFileDialog = new SaveFileDialog();
+        private readonly OpenFileDialog openFileDialog = new OpenFileDialog();
 
 
         public MainWindow()
@@ -197,10 +198,8 @@ namespace BookShelf
             if (saveFileDialog.ShowDialog() == false)
                 return;
             var formatter = new BinaryFormatter();
-            using (var fileStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(fileStream, Books);
-            }
+            using var fileStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate);
+            formatter.Serialize(fileStream, Books);
         }
 
         private void LoadBookshelf(object sender, RoutedEventArgs e)
@@ -208,22 +207,20 @@ namespace BookShelf
             if (openFileDialog.ShowDialog() == false)
                 return;
             var formatter = new BinaryFormatter();
-            using (var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open))
+            using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
+            try
             {
-                try
+                var loadedBookshelf = new ObservableCollection<Book>();
+                loadedBookshelf = (ObservableCollection<Book>)formatter.Deserialize(fileStream);
+                Books.Clear();
+                foreach (var book in loadedBookshelf)
                 {
-                    var loadedBookshelf = new ObservableCollection<Book>();
-                    loadedBookshelf = (ObservableCollection<Book>)formatter.Deserialize(fileStream);
-                    Books.Clear();
-                    foreach (var book in loadedBookshelf)
-                    {
-                        Books.Add(book);
-                    }
+                    Books.Add(book);
                 }
-                catch (Exception exception)
-                {
-                    MessageBox.Show("Файл поврежден, чтение невозможно \n" + "Расшифровка ошибки: \n" + exception.Message, "Ошибка чтения файла", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Файл поврежден, чтение невозможно \n" + "Расшифровка ошибки: \n" + exception.Message, "Ошибка чтения файла", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

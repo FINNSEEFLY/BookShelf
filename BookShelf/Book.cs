@@ -7,16 +7,33 @@ namespace BookShelf
     [Serializable]
     class Book
     {
+        public string Isbn { get; }
+        public string Title { get; }
+        public string Author { get; }
+        public string Publisher { get; }
+        public int Year { get; }
+        public double Price { get; }
 
-        public string Isbn { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Publisher { get; set; }
-        public int Year { get; set; }
-
-        // Через Culture сделать выбор форматирования валюты
-        public int Price { get; set; }
-
+        public Book()
+        {
+            this.Isbn = "";
+            this.Title = "";
+            this.Author = "";
+            this.Publisher = "";
+            this.Year = 0;
+            this.Price = 0;
+        }
+        
+        public Book(string isbn, string title, string author, string publisher, int year, double price)
+        {
+            this.Isbn = isbn;
+            this.Title = title;
+            this.Author = author;
+            this.Publisher = publisher;
+            this.Year = year;
+            this.Price = price;
+        }
+        
         public override string ToString()
         {
             return "\"" + Title + "\" (" + Year + ") " + Author + "ISBN : " + Isbn;

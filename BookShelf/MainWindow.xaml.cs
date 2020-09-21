@@ -28,11 +28,12 @@ namespace BookShelf
     {
         private ObservableCollection<Book> Books = new ObservableCollection<Book>
         {
-            new Book { Isbn = "9785170166824", Author = "Чак Паланик", Title = "Бойцовский клуб", Year = 1996, Publisher = "ACT", Price = 18 },
-            new Book { Isbn = "0201835959", Author = "Фредерик Брукс", Title = "Мифический человеко-месяц", Year = 1975, Publisher = "Addison–Wesley", Price = 71 },
-            new Book { Isbn = "9785699923595", Author = "Рэй Брэдбери", Title = "Fahrenheit 451", Year = 2017, Publisher = "Эксмо", Price = 19 },
-            new Book { Isbn = "9785170800858", Author = "Хаксли Олдос", Title = "О дивный новый мир", Year = 2014, Publisher = "ACT", Price = 9 }
-            //new Book { Isbn = "9785446109609", Author = "Роберт Мартин", Title = "Чистый код. Создание, анализ и рефакторинг", Year = 2019, Publisher="Питер", Price = 84}
+            new Book( "9785170166824","Бойцовский клуб","Чак Паланик","ACT",1996,18),
+            new Book( "0201835959","Мифический человеко-месяц","Фредерик Брукс","Addison",1975,71),
+            new Book( "9785699923595","Fahrenheit 451","Рэй Брэдбери","Эксмо",2017,19),
+            new Book( "9785170800858","О дивный новый мир","Хаксли Олдос","ACT",2014,9)
+            //new Book( "9785446109609","Чистый код. Создание, анализ и рефакторинг","Роберт Мартин","Питер",2019,84)
+            
         };
 
         private const string  RegExp = @"\b[0-9]{9,}[X]?\b";
@@ -73,13 +74,10 @@ namespace BookShelf
                 isbn = FixIsbn(isbn);
                 if (IsIsbnCorrect(isbn))
                 {
-                    foreach (var book in Books)
+                    if (Books.Any(book => book.Isbn.Equals(isbn)))
                     {
-                        if (book.Isbn.Equals(isbn))
-                        {
-                            MessageBox.Show("Книга с таким ISBN уже добавлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return;
-                        }
+                        MessageBox.Show("Книга с таким ISBN уже добавлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
                     }
                 }
                 else
@@ -87,15 +85,7 @@ namespace BookShelf
                     MessageBox.Show("В введенном ISBN скорее ввсего допущена ошибка\nПерепроверьте данные", "Не верный ISBN", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
-                var newBook = new Book()
-                {
-                    Isbn = isbn,
-                    Title = title,
-                    Author = author,
-                    Price = Convert.ToInt32(price),
-                    Publisher = publisher,
-                    Year = Convert.ToInt32(year)
-                };
+                var newBook = new Book(isbn,title,author,publisher,Convert.ToInt32(year),Convert.ToInt32(price));
                 Books.Add(newBook);
             }
             else
@@ -116,61 +106,51 @@ namespace BookShelf
 
         private bool IsFieldsNotClear()
         {
-            if (TbIsbn.Text.Trim().Length != 0 &&
-                TbAuthor.Text.Trim().Length != 0 &&
-                TbPrice.Text.Trim().Length != 0 &&
-                TbPublisher.Text.Trim().Length != 0 &&
-                TbYear.Text.Trim().Length != 0
-                )
-            {
-                return true;
-            }
-            else return false;
-
+            return TbIsbn.Text.Trim().Length != 0 &&
+                   TbAuthor.Text.Trim().Length != 0 &&
+                   TbPrice.Text.Trim().Length != 0 &&
+                   TbPublisher.Text.Trim().Length != 0 &&
+                   TbYear.Text.Trim().Length != 0;
         }
-        private bool IsIsbnCorrect(string isbn)
+        private static bool IsIsbnCorrect(string isbn)
         {
             if (Regex.IsMatch(isbn, RegExp))
             {
-                if (isbn.Length == 10)
+                switch (isbn.Length)
                 {
-                    int checkSum = 0;
-                    for (int i = 0; i < 9; i++)
+                    case 10:
                     {
-                        checkSum += int.Parse(isbn[i].ToString()) * (i + 1);
+                        var checkSum = 0;
+                        for (var i = 0; i < 9; i++)
+                        {
+                            checkSum += int.Parse(isbn[i].ToString()) * (i + 1);
+                        }
+                        checkSum %= 11;
+                        return checkSum == int.Parse(isbn[9].ToString()) || (checkSum == 10 && isbn[9] == 'X');
                     }
-                    checkSum %= 11;
-                    if (checkSum == int.Parse(isbn[9].ToString()) || (checkSum == 10 && isbn[9] == 'X'))
-                        return true;
-                    else
-                        return false;
-                }
-                /*  Все пункты выполнять без контрольной суммы
-                 *  1) Сложить все цифры на четных позициях
-                 *  2) Умножить результат прошлого пункта на 3 
-                 *  3) Сложить все цифры на нечетных позициях
-                 *  4) Сложить числа из пункта 3 и 2
-                 *  5) Взять последнюю цифру (Number mod 10)
-                 *  6) Вычитаем из 10 результат 5-го пункта если он не равен 0
-                */
-                else if (isbn.Length == 13)
-                {
-                    int checkSum = 0;
-                    for (int i = 0; i < 12; i++)
+                    /*  Алгоритм вычисления контрольной суммы ISBN (13-ти символьный)
+                     *  Все пункты выполнять без контрольной суммы
+                     *  1) Сложить все цифры на четных позициях
+                     *  2) Умножить результат прошлого пункта на 3 
+                     *  3) Сложить все цифры на нечетных позициях
+                     *  4) Сложить числа из пункта 3 и 2
+                     *  5) Взять последнюю цифру (Number mod 10)
+                     *  6) Вычитаем из 10 результат 5-го пункта если он не равен 0
+                    */
+                    case 13:
                     {
-                        checkSum += i % 2 == 0 ? int.Parse(isbn[i].ToString()) : int.Parse((isbn[i]).ToString()) * 3;
+                        var checkSum = 0;
+                        for (var i = 0; i < 12; i++)
+                        {
+                            checkSum += i % 2 == 0 ? int.Parse(isbn[i].ToString()) : int.Parse((isbn[i]).ToString()) * 3;
+                        }
+                        checkSum %= 10;
+                        if (checkSum != 0)
+                            checkSum = 10 - checkSum;
+                        return checkSum == int.Parse(isbn[12].ToString()) || (checkSum == 10 && isbn[12] == 'X');
                     }
-                    checkSum %= 10;
-                    if (checkSum != 0)
-                        checkSum = 10 - checkSum;
-                    if (checkSum == int.Parse(isbn[12].ToString()) || (checkSum == 10 && isbn[12] == 'X'))
-                        return true;
-                    else
+                    default:
                         return false;
-                }
-                else
-                {
-                    return false;
                 }
             }
             else
@@ -179,14 +159,14 @@ namespace BookShelf
             }
         }
 
-        private string FixIsbn(string isbn)
+        private static string FixIsbn(string isbn)
         {
             return isbn.Replace("-", "").Replace(" ", "");
         }
 
         private void DeleteClick(object sender, RoutedEventArgs e)
         {
-            Book selectedBook = (Book)GridBooks.SelectedItem;
+            var selectedBook = (Book)GridBooks.SelectedItem;
             if (selectedBook != null)
             {
                 Books.Remove(selectedBook);

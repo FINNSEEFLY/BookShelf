@@ -24,9 +24,9 @@ namespace BookShelf
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow 
     {
-        private ObservableCollection<Book> Books = new ObservableCollection<Book>
+        private ObservableCollection<Book> _books = new ObservableCollection<Book>
         {
             new Book( "9785170166824","Бойцовский клуб","Чак Паланик","ACT",1996,18),
             new Book( "0201835959","Мифический человеко-месяц","Фредерик Брукс","Addison",1975,71),
@@ -37,23 +37,23 @@ namespace BookShelf
         };
 
         private const string  RegExp = @"\b[0-9]{9,}[X]?\b";
-        private readonly SaveFileDialog saveFileDialog = new SaveFileDialog();
-        private readonly OpenFileDialog openFileDialog = new OpenFileDialog();
+        private readonly SaveFileDialog _saveFileDialog = new SaveFileDialog();
+        private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
 
         public MainWindow()
         {
             InitializeComponent();
-            GridBooks.ItemsSource = Books;
-            saveFileDialog.FileName = "Bookshelf";
-            saveFileDialog.Title = "Сохранить библиотеку";
-            saveFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
-            saveFileDialog.DefaultExt = ".bsh";
-            openFileDialog.FileName = "Bookshelf";
-            openFileDialog.Title = "Загрузить библиотеку";
-            openFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
-            openFileDialog.DefaultExt = ".bsh";
-            openFileDialog.Multiselect = false;
+            GridBooks.ItemsSource = _books;
+            _saveFileDialog.FileName = "Bookshelf";
+            _saveFileDialog.Title = "Сохранить библиотеку";
+            _saveFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
+            _saveFileDialog.DefaultExt = ".bsh";
+            _openFileDialog.FileName = "Bookshelf";
+            _openFileDialog.Title = "Загрузить библиотеку";
+            _openFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
+            _openFileDialog.DefaultExt = ".bsh";
+            _openFileDialog.Multiselect = false;
         }
 
         private void ExitClick(object sender, RoutedEventArgs e)
@@ -74,7 +74,7 @@ namespace BookShelf
                 isbn = FixIsbn(isbn);
                 if (IsIsbnCorrect(isbn))
                 {
-                    if (Books.Any(book => book.Isbn.Equals(isbn)))
+                    if (_books.Any(book => book.Isbn.Equals(isbn)))
                     {
                         MessageBox.Show("Книга с таким ISBN уже добавлена", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
@@ -86,7 +86,7 @@ namespace BookShelf
                     return;
                 }
                 var newBook = new Book(isbn,title,author,publisher,Convert.ToInt32(year),Convert.ToInt32(price));
-                Books.Add(newBook);
+                _books.Add(newBook);
             }
             else
             {
@@ -99,7 +99,7 @@ namespace BookShelf
             e.Handled = "0123456789".IndexOf(e.Text) < 0;
         }
 
-        private void ValidateISBN(object sender, TextCompositionEventArgs e)
+        private void ValidateIsbn(object sender, TextCompositionEventArgs e)
         {
             e.Handled = "0123456789 X-_".IndexOf(e.Text) < 0;
         }
@@ -147,7 +147,7 @@ namespace BookShelf
                         checkSum %= 10;
                         if (checkSum != 0)
                             checkSum = 10 - checkSum;
-                        return checkSum == int.Parse(isbn[12].ToString()) || (checkSum == 10 && isbn[12] == 'X');
+                        return checkSum == int.Parse(isbn[12].ToString());
                     }
                     default:
                         return false;
@@ -169,33 +169,32 @@ namespace BookShelf
             var selectedBook = (Book)GridBooks.SelectedItem;
             if (selectedBook != null)
             {
-                Books.Remove(selectedBook);
+                _books.Remove(selectedBook);
             }
         }
 
         private void SaveBookshelf(object sender, RoutedEventArgs e)
         {
-            if (saveFileDialog.ShowDialog() == false)
+            if (_saveFileDialog.ShowDialog() == false)
                 return;
             var formatter = new BinaryFormatter();
-            using var fileStream = new FileStream(saveFileDialog.FileName, FileMode.OpenOrCreate);
-            formatter.Serialize(fileStream, Books);
+            using var fileStream = new FileStream(_saveFileDialog.FileName, FileMode.OpenOrCreate);
+            formatter.Serialize(fileStream, _books);
         }
 
         private void LoadBookshelf(object sender, RoutedEventArgs e)
         {
-            if (openFileDialog.ShowDialog() == false)
+            if (_openFileDialog.ShowDialog() == false)
                 return;
             var formatter = new BinaryFormatter();
-            using var fileStream = new FileStream(openFileDialog.FileName, FileMode.Open);
+            using var fileStream = new FileStream(_openFileDialog.FileName, FileMode.Open);
             try
             {
-                var loadedBookshelf = new ObservableCollection<Book>();
-                loadedBookshelf = (ObservableCollection<Book>)formatter.Deserialize(fileStream);
-                Books.Clear();
+                var loadedBookshelf = (ObservableCollection<Book>)formatter.Deserialize(fileStream);
+                _books.Clear();
                 foreach (var book in loadedBookshelf)
                 {
-                    Books.Add(book);
+                    _books.Add(book);
                 }
             }
             catch (Exception exception)
@@ -206,62 +205,62 @@ namespace BookShelf
 
         private void SortBooksByIsbnAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Isbn));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Isbn));
         }
 
         private void SortBooksByIsbnDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Isbn));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Isbn));
         }
 
         private void SortBooksByPriceAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Price));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Price));
         }
 
         private void SortBooksByPriceDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Price));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Price));
         }
 
         private void SortBooksByAuthorAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Author));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Author));
         }
 
         private void SortBooksByAuthorDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Author));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Author));
         }
 
         private void SortBooksByTitleAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Title));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Title));
         }
 
         private void SortBooksByTitleDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Title));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Title));
         }
 
         private void SortBooksByYearAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Year));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Year));
         }
 
         private void SortBooksByYearDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Year));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Year));
         }
 
         private void SortBooksByPublisherAscending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderBy(x => x.Publisher));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Publisher));
         }
 
         private void SortBooksByPublisherDescending(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = Books = new ObservableCollection<Book>(Books.OrderByDescending(x => x.Publisher));
+            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Publisher));
         }
     }
 }

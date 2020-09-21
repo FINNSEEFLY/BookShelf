@@ -5,7 +5,7 @@ using System.Text;
 namespace BookShelf
 {
     [Serializable]
-    class Book
+    internal class Book
     {
         public string Isbn { get; }
         public string Title { get; }

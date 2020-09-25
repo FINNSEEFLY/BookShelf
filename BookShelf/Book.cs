@@ -5,7 +5,7 @@ using System.Text;
 namespace BookShelf
 {
     [Serializable]
-    internal class Book
+    public class Book
     {
         public string Isbn { get; }
         public string Title { get; }
@@ -46,7 +46,11 @@ namespace BookShelf
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            if (obj != null)
+            {
+                return this.GetHashCode() == obj.GetHashCode();
+            }
+            return false;
         }
 
     }

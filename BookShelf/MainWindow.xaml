@@ -50,7 +50,7 @@
             </MenuItem>
             <MenuItem Header="Сортировать по полю">
                 <MenuItem Header="ISBN">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByIsbnAscending"/>
+                    <MenuItem Header="По возрастанию" Click="SortBooksByIsbnAscending" Tag=""/>
                     <MenuItem Header="По убыванию" Click="SortBooksByIsbnDescending"/>
                 </MenuItem>
                 <MenuItem Header="Автор">

@@ -24,19 +24,20 @@ namespace BookShelf
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow 
+    public partial class MainWindow
     {
         private ObservableCollection<Book> _books = new ObservableCollection<Book>
-        {
-            new Book( "9785170166824","Бойцовский клуб","Чак Паланик","ACT",1996,18),
-            new Book( "0201835959","Мифический человеко-месяц","Фредерик Брукс","Addison",1975,71),
-            new Book( "9785699923595","Fahrenheit 451","Рэй Брэдбери","Эксмо",2017,19),
-            new Book( "9785170800858","О дивный новый мир","Хаксли Олдос","ACT",2014,9)
+            {
+                new Book("9785170166824", "Бойцовский клуб", "Чак Паланик", "ACT", 1996, 18),
+                new Book("0201835959", "Мифический человеко-месяц", "Фредерик Брукс", "Addison", 1975, 71),
+                new Book("9785699923595", "Fahrenheit 451", "Рэй Брэдбери", "Эксмо", 2017, 19),
+                new Book("9785170800858", "О дивный новый мир", "Хаксли Олдос", "ACT", 2014, 9)
+            }
             //new Book( "9785446109609","Чистый код. Создание, анализ и рефакторинг","Роберт Мартин","Питер",2019,84)
-            
-        };
+            ;
 
-        private const string  RegExp = @"\b[0-9]{9,}[X]?\b";
+        private ObservableCollection<Book> _collection = new ObservableCollection<Book>();
+        private const string RegExp = @"\b[0-9]{9,}[X]?\b";
         private readonly SaveFileDialog _saveFileDialog = new SaveFileDialog();
         private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
@@ -45,6 +46,11 @@ namespace BookShelf
         {
             InitializeComponent();
             GridBooks.ItemsSource = _books;
+            InitializeFileDialogs();
+        }
+
+        private void InitializeFileDialogs()
+        {
             _saveFileDialog.FileName = "Bookshelf";
             _saveFileDialog.Title = "Сохранить библиотеку";
             _saveFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
@@ -54,7 +60,7 @@ namespace BookShelf
             _openFileDialog.Filter = "Файл библиотеки (*.bsh)|*.bsh";
             _openFileDialog.DefaultExt = ".bsh";
             _openFileDialog.Multiselect = false;
-        }
+        }           
 
         private void ExitClick(object sender, RoutedEventArgs e)
         {
@@ -114,21 +120,20 @@ namespace BookShelf
         }
         private static bool IsIsbnCorrect(string isbn)
         {
-            if (Regex.IsMatch(isbn, RegExp))
+            if (!Regex.IsMatch(isbn, RegExp)) return false;
+            switch (isbn.Length)
             {
-                switch (isbn.Length)
+                case 10:
                 {
-                    case 10:
+                    var checkSum = 0;
+                    for (var i = 0; i < 9; i++)
                     {
-                        var checkSum = 0;
-                        for (var i = 0; i < 9; i++)
-                        {
-                            checkSum += int.Parse(isbn[i].ToString()) * (i + 1);
-                        }
-                        checkSum %= 11;
-                        return checkSum == int.Parse(isbn[9].ToString()) || (checkSum == 10 && isbn[9] == 'X');
+                        checkSum += int.Parse(isbn[i].ToString()) * (i + 1);
                     }
-                    /*  Алгоритм вычисления контрольной суммы ISBN (13-ти символьный)
+                    checkSum %= 11;
+                    return checkSum == int.Parse(isbn[9].ToString()) || (checkSum == 10 && isbn[9] == 'X');
+                }
+                /*  Алгоритм вычисления контрольной суммы ISBN (13-ти символьный)
                      *  Все пункты выполнять без контрольной суммы
                      *  1) Сложить все цифры на четных позициях
                      *  2) Умножить результат прошлого пункта на 3 
@@ -137,25 +142,20 @@ namespace BookShelf
                      *  5) Взять последнюю цифру (Number mod 10)
                      *  6) Вычитаем из 10 результат 5-го пункта если он не равен 0
                     */
-                    case 13:
+                case 13:
+                {
+                    var checkSum = 0;
+                    for (var i = 0; i < 12; i++)
                     {
-                        var checkSum = 0;
-                        for (var i = 0; i < 12; i++)
-                        {
-                            checkSum += i % 2 == 0 ? int.Parse(isbn[i].ToString()) : int.Parse((isbn[i]).ToString()) * 3;
-                        }
-                        checkSum %= 10;
-                        if (checkSum != 0)
-                            checkSum = 10 - checkSum;
-                        return checkSum == int.Parse(isbn[12].ToString());
+                        checkSum += i % 2 == 0 ? int.Parse(isbn[i].ToString()) : int.Parse((isbn[i]).ToString()) * 3;
                     }
-                    default:
-                        return false;
+                    checkSum %= 10;
+                    if (checkSum != 0)
+                        checkSum = 10 - checkSum;
+                    return checkSum == int.Parse(isbn[12].ToString());
                 }
-            }
-            else
-            {
-                return false;
+                default:
+                    return false;
             }
         }
 
@@ -192,7 +192,7 @@ namespace BookShelf
             {
                 var loadedBookshelf = (ObservableCollection<Book>)formatter.Deserialize(fileStream);
                 _books.Clear();
-                foreach (var book in loadedBookshelf)
+                foreach (Book book in loadedBookshelf)
                 {
                     _books.Add(book);
                 }

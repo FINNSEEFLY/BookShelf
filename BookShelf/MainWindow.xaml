@@ -12,7 +12,7 @@
         MinHeight="700"
         MaxWidth="1000"
         MaxHeight="700"
-        >
+>
 
     <Window.Resources>
         <Style x:Key="LeftSideButtons" TargetType="Button">
@@ -34,9 +34,6 @@
     </Window.Resources>
    
     <Grid x:Name="GrdContainer">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="19"/>
             <RowDefinition/>
@@ -46,7 +43,7 @@
             <MenuItem Header="Файл">
                 <MenuItem Header="Сохранить библиотеку" Click="SaveBookshelf"></MenuItem>
                 <MenuItem Header="Загрузить библиотеку" Click="LoadBookshelf"></MenuItem>
-                <MenuItem x:Name="MiExit" Click="ExitClick" Header="Выход"></MenuItem>
+                <MenuItem Click="ExitClick" Header="Выход"></MenuItem>
             </MenuItem>
             <MenuItem Header="Сортировать по полю">
                 <MenuItem Header="ISBN">

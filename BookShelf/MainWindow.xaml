@@ -50,28 +50,28 @@
             </MenuItem>
             <MenuItem Header="Сортировать по полю">
                 <MenuItem Header="ISBN">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByIsbnAscending" Tag=""/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByIsbnDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="IsbnAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="IsbnDescending"/>
                 </MenuItem>
                 <MenuItem Header="Автор">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByAuthorAscending"/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByAuthorDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="AuthorAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="AuthorDescending"/>
                 </MenuItem>
                 <MenuItem Header="Название">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByTitleAscending"/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByTitleDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="TitleAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="TitleDescending"/>
                 </MenuItem>
                 <MenuItem Header="Год выхода">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByYearAscending"/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByYearDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="YearAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="YearDescending"/>
                 </MenuItem>
                 <MenuItem Header="Издатель">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByPublisherAscending"/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByPublisherDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="PublisherAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="PublisherDescending"/>
                 </MenuItem>
                 <MenuItem Header="Цена">
-                    <MenuItem Header="По возрастанию" Click="SortBooksByPriceAscending"/>
-                    <MenuItem Header="По убыванию" Click="SortBooksByPriceDescending"/>
+                    <MenuItem Header="По возрастанию" Click="SelectSorting" Tag="PriceAscending"/>
+                    <MenuItem Header="По убыванию" Click="SelectSorting" Tag="PriceDescending"/>
                 </MenuItem>
             </MenuItem>
         </Menu>

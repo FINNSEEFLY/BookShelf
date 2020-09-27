@@ -27,20 +27,37 @@ namespace BookShelf
     public partial class MainWindow
     {
         private ObservableCollection<Book> _books = new ObservableCollection<Book>
-            {
-                new Book("9785170166824", "Бойцовский клуб", "Чак Паланик", "ACT", 1996, 18),
-                new Book("0201835959", "Мифический человеко-месяц", "Фредерик Брукс", "Addison", 1975, 71),
-                new Book("9785699923595", "Fahrenheit 451", "Рэй Брэдбери", "Эксмо", 2017, 19),
-                new Book("9785170800858", "О дивный новый мир", "Хаксли Олдос", "ACT", 2014, 9)
-            }
-            //new Book( "9785446109609","Чистый код. Создание, анализ и рефакторинг","Роберт Мартин","Питер",2019,84)
-            ;
-
+        {
+            new Book("9785170166824", "Бойцовский клуб", "Чак Паланик", "ACT", 1996, 18),
+            new Book("0201835959", "Мифический человеко-месяц", "Фредерик Брукс", "Addison", 1975, 71),
+            new Book("9785699923595", "Fahrenheit 451", "Рэй Брэдбери", "Эксмо", 2017, 19),
+            new Book("9785170800858", "О дивный новый мир", "Хаксли Олдос", "ACT", 2014, 9)
+        };
+        //new Book( "9785446109609","Чистый код. Создание, анализ и рефакторинг","Роберт Мартин","Питер",2019,84)
+        
         private ObservableCollection<Book> _collection = new ObservableCollection<Book>();
         private const string RegExp = @"\b[0-9]{9,}[X]?\b";
         private readonly SaveFileDialog _saveFileDialog = new SaveFileDialog();
         private readonly OpenFileDialog _openFileDialog = new OpenFileDialog();
 
+        private delegate ObservableCollection<Book> BookShelfSort(ObservableCollection<Book> x);
+
+        private Dictionary<string, BookShelfSort> _sortDictionary =
+            new Dictionary<string, BookShelfSort>
+            {
+                ["IsbnAscending"] = books => new ObservableCollection<Book>(books.OrderBy(x=> x.Isbn)),
+                ["IsbnDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Isbn)),
+                ["AuthorAscending"] = books => new ObservableCollection<Book>(books.OrderBy(x=>x.Author)),
+                ["AuthorDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Author)),
+                ["TitleAscending"] = books=> new ObservableCollection<Book>(books.OrderBy(x=>x.Title)),
+                ["TitleDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Title)),
+                ["YearAscending"] = books=> new ObservableCollection<Book>(books.OrderBy(x=>x.Year)),
+                ["YearDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Year)),
+                ["PublisherAscending"] = books=> new ObservableCollection<Book>(books.OrderBy(x=>x.Publisher)), 
+                ["PublisherDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Publisher)),
+                ["PriceAscending"] = books=> new ObservableCollection<Book>(books.OrderBy(x=>x.Price)),
+                ["PriceDescending"] = books=> new ObservableCollection<Book>(books.OrderByDescending(x=>x.Price)) 
+            };
 
         public MainWindow()
         {
@@ -203,64 +220,17 @@ namespace BookShelf
             }
         }
 
-        private void SortBooksByIsbnAscending(object sender, RoutedEventArgs e)
+        private void SelectSorting(object sender, RoutedEventArgs e)
         {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Isbn));
-        }
-
-        private void SortBooksByIsbnDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Isbn));
-        }
-
-        private void SortBooksByPriceAscending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Price));
-        }
-
-        private void SortBooksByPriceDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Price));
-        }
-
-        private void SortBooksByAuthorAscending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Author));
-        }
-
-        private void SortBooksByAuthorDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Author));
-        }
-
-        private void SortBooksByTitleAscending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Title));
-        }
-
-        private void SortBooksByTitleDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Title));
-        }
-
-        private void SortBooksByYearAscending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Year));
-        }
-
-        private void SortBooksByYearDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Year));
-        }
-
-        private void SortBooksByPublisherAscending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderBy(x => x.Publisher));
-        }
-
-        private void SortBooksByPublisherDescending(object sender, RoutedEventArgs e)
-        {
-            GridBooks.ItemsSource = _books = new ObservableCollection<Book>(_books.OrderByDescending(x => x.Publisher));
+            var tag = ((MenuItem) e.OriginalSource).Tag;
+            try
+            {
+                GridBooks.ItemsSource = _books = _sortDictionary[(string) tag](_books);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Stack Tace: \n"+ex.StackTrace+"\nException:\n"+ex.Message);
+            }
         }
     }
 }

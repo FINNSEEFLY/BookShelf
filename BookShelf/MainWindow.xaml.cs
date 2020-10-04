@@ -124,7 +124,7 @@ namespace BookShelf
 
         private void ValidateIsbn(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = "0123456789 X-_".IndexOf(e.Text) < 0;
+            e.Handled = "0123456789 X-".IndexOf(e.Text) < 0;
         }
 
         private bool IsFieldsNotClear()
